@@ -1,8 +1,15 @@
+#pragma config(Sensor, S3,     sonarSensor,         sensorSONAR)
+
 #include "commo.c"
+#include "control.c"
+#include "sonar.c"
 
 task main()
 {
-  StartTask(TelemetrySender);                             // Start Task TOne.
+  StartTask(TelemetrySender);
+  StartTask(CommandParser);
+  StartTask(ControlTask);
+  StartTask(SonarTask);
 
   while(true)
   {
