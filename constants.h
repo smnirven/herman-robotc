@@ -13,4 +13,7 @@ typedef enum {
 
 int currentBatteryLevel;
 int sonarDistanceCm = 255;
+long currentLat = 0;
+long currentLng = 0;
+bool gpsLinkStatus = false;
 MotionCommand newCommand = kNoOp;

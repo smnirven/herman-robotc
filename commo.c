@@ -1,6 +1,7 @@
 #include "constants.h"
 
-ubyte packetToSend[6];
+ubyte packetToSend[50];
+int index;
 
 void buildTelemetryPacket()
 {
@@ -8,10 +9,35 @@ void buildTelemetryPacket()
   packetToSend[1] = 'v';
   string batteryVoltageStr;
   sprintf(batteryVoltageStr, "%u", currentBatteryLevel);
-  packetToSend[2] = (ubyte) StringGetChar(batteryVoltageStr, 0);
-  packetToSend[3] = (ubyte) StringGetChar(batteryVoltageStr, 1);
-  packetToSend[4] = (ubyte) StringGetChar(batteryVoltageStr, 2);
-  packetToSend[5] = (ubyte) StringGetChar(batteryVoltageStr, 3);
+  string latStr;
+  sprintf(latStr, "%d", currentLat);
+  string lngStr;
+  sprintf(lngStr, "%d", currentLng);
+  index=2;
+  for(int i=0;i<strlen(batteryVoltageStr);i++){
+    packetToSend[index] = (ubyte) StringGetChar(batteryVoltageStr, i);
+    index++;
+  }
+  packetToSend[index] = 'l';
+  index++;
+  packetToSend[index] = 'a';
+  index++;
+  packetToSend[index] = 't';
+  index++;
+  for(int i=0; i<strlen(latStr);i++){
+    packetToSend[index] = (ubyte) StringGetChar(latStr, i);
+    index++;
+  }
+  packetToSend[index] = 'l';
+  index++;
+  packetToSend[index] = 'n';
+  index++;
+  packetToSend[index] = 'g';
+  index++;
+  for(int i=0; i<strlen(lngStr);i++){
+    packetToSend[index] = (ubyte) StringGetChar(lngStr, i);
+    index++;
+  }
 }
 
 MotionCommand parseCommand(char cmd)
@@ -27,13 +53,11 @@ task TelemetrySender()
 
   while(true)
   {
-    wait1Msec(1500);                                 // Allow for a short wait, freeing up the CPU for other tasks.
-
     nxtDisplayBigStringAt(20, 52, "%3.1f V", currentBatteryLevel / (float) 1000);
 
     buildTelemetryPacket();
-    nxtWriteRawHS(packetToSend, 6);
-    wait1Msec(1000);
+    nxtWriteRawHS(packetToSend, index+1);
+    wait1Msec(5000);
   }
   return;
 }
